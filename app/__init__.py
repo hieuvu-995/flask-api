@@ -8,9 +8,10 @@ jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:admin@localhost:3306/hieuvu'
-app.config['SQL_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_BLACKLIST_ENABLE'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'matkhau_ratbimat'
 
+from app import route

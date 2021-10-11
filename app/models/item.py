@@ -5,7 +5,7 @@ class ItemModel(db.Model):
     id = db.Column(db.INTEGER, primary_key= True)
     name = db.Column(db.String(50), nullable = False, unique = True)
     price = db.Column(db.String(50), nullable = False)
-    store_id = db.Column(db.Integer, foreign_key('stores.id')) 
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id')) 
     store = db.relationship('StoreModel', back_populates = 'items')
 
     def __init__(self, name, price, store_id):

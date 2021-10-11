@@ -4,7 +4,7 @@ class StoreModel(db.Model):
     __tablename__='stores'
     id = db.Column(db.INTEGER, primary_key= True)
     name = db.Column(db.String(50), nullable = False, unique = True)
-    items = db.relationship('UserModel', back_populates = 'store', lazy = 'dynamic')
+    items = db.relationship('ItemModel', back_populates = 'store', lazy = 'dynamic')
 
     def __init__(self, name):
         self.name = name
@@ -21,9 +21,9 @@ class StoreModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_name(cls, username):
-        return cls.query.filter_by(username = username).first()
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name = name).first()
     
     @classmethod
-    def find_all(cls, _id):
+    def find_all(cls):
         return cls.query.all()
