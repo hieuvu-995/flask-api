@@ -5,10 +5,12 @@ class UserModel(db.Model):
     id = db.Column(db.INTEGER, primary_key= True)
     username = db.Column(db.String(50), nullable = False, unique = True)
     password = db.Column(db.String(50), nullable = False)
+    role = db.Column(db.String(50))
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, role = 'user'):
         self.username = username
         self.password = password
+        self.role = role
 
     def json(self):
         return  

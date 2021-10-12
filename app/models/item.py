@@ -12,6 +12,7 @@ class ItemModel(db.Model):
         self.name = name
         self.price = price
         self.store_id = store_id
+        
 
     def json(self):
         return  {'name': self.name, 'price':self.price, 'store_id':self.store_id}

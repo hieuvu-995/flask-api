@@ -15,3 +15,4 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'matkhau_ratbimat'
 
 from app import route
+from app import token_custom

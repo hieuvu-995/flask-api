@@ -1,3 +1,4 @@
+from flask_jwt_extended import jwt_required, get_jwt
 from flask_restful import Resource, reqparse
 
 from app.models.item import ItemModel
@@ -18,6 +19,8 @@ _parser.add_argument(
 )
 
 class Item(Resource):
+    @jwt_required()
+    #Require accesstoken to POST             
     def post(self, name):
         data = _parser.parse_args()
         ItemModel.find_by_name(name)
@@ -25,7 +28,7 @@ class Item(Resource):
             item = ItemModel(name, data['price'], data['store_id'])
             item.save_to_db()
             return item.json()
-
+    @jwt_required()
     def get(self, name):
         item = ItemModel.find_by_name(name)
         if item:
@@ -52,5 +55,9 @@ class Item(Resource):
         return {'message' : 'Item deleted'}
 
 class ItemList(Resource):
+    @jwt_required()
     def get(self):
-        return {'items' : [item.json() for item in ItemModel.find_all()]}
+        claim = get_jwt()                   #Get additional_claim from create_access_token          
+        if claim['claims'] == 'admin':      #Compare for permission
+            return {'items' : [item.json() for item in ItemModel.find_all()]}
+        return {'message' : 'Admin permission required'}

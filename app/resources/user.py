@@ -1,10 +1,12 @@
+from typing import Optional
+from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
     create_access_token, 
     create_refresh_token,
     jwt_required,
     get_jwt_identity,
-    get_jti
+    get_jwt
     )
 from app.models.user import UserModel
 from app.blacklist import BLACKLIST
@@ -62,7 +64,8 @@ class UserLogin(Resource):
         data = _parser.parse_args()
         user = UserModel.find_by_name(data['username'])
         if user and user.password == data['password']:
-            access_token = create_access_token(identity=data['username'], fresh = True)
+            additional_claims ={"claims": user.role}
+            access_token = create_access_token(identity=data['username'], fresh = True, additional_claims = additional_claims)
             refresh_token = create_refresh_token(identity=data['username'])
             return {
                 'access_token':access_token, 
@@ -71,15 +74,34 @@ class UserLogin(Resource):
         return {'message':'Invalid credentials'}, 400
 
 class UserLogout(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
-        jti = get_jti()
+        jti = get_jwt()['jti']
         BLACKLIST.add(jti)
-        return {'message' : 'Logout successfully'}
+        return {'message' : 'Log out successfully'}
+
+        
     
 class RefreshToken(Resource):
+    """
+    Create new access token
+    """
     @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh = False)
         return {'access_token' : new_token}, 200
+
+class SetRole(Resource):
+    """
+    Set admin role to default account
+    """
+    @jwt_required()
+    def post(self, username):
+        user = UserModel.find_by_name(username)
+        if user:
+            user.role = "admin"
+            user.save_to_db()
+            return {'message' : 'Set role successfully'}
+        else:
+            return {'message' : 'User not found'}
